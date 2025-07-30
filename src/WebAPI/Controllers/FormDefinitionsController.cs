@@ -23,34 +23,18 @@ namespace WebAPI.Controllers
             _tableManager = tableManager;
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> CreateForm([FromBody] FormDefinition request)
-        //{
-        //    // 1. 設定對應的實體資料表名稱
-        //    request.UserDataTableName = $"UserData_{request.Name}";
-
-        //    // 2. 將表單定義寫入元數據資料庫
-        //    await _unitOfWork.FormDefinitions.AddAsync(request);
-        //    await _unitOfWork.CompleteAsync();
-
-        //    // 3. 呼叫服務，動態建立實體資料表
-        //    try
-        //    {
-        //        await _tableManager.CreateTableForFormAsync(request);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // 如果建表失敗，需要有補償機制 (e.g., 刪除剛才寫入的定義)
-        //        // 這裡暫時簡化，只回傳錯誤
-        //        return BadRequest($"建立實體資料表失敗: {ex.Message}");
-        //    }
-
-        //    return CreatedAtAction(nameof(GetFormById), new { id = request.Id }, request);
-        //}
-
+       
         [HttpPost]
         public async Task<IActionResult> CreateForm([FromBody] CreateFormRequestDto requestDto)
         {
+            //  加入檢查邏輯
+            var existingForm = await _unitOfWork.FormDefinitions.GetByNameAsync(requestDto.Name);
+            if (existingForm != null)
+            {
+                // 如果表單已存在，回傳 409 Conflict 錯誤
+                return Conflict(new { message = $"名稱為 '{requestDto.Name}' 的表單已經存在。" });
+            }
+
             // 1. 手動從 DTO 映射到 Entity
             var formDefinition = new FormDefinition
             {
@@ -86,7 +70,9 @@ namespace WebAPI.Controllers
             }
 
             // 為了簡化，回傳物件仍用 entity，實務上應該回傳 Response DTO
-            return CreatedAtAction(nameof(GetFormById), new { id = formDefinition.Id }, formDefinition);
+            // return CreatedAtAction(nameof(GetFormById), new { id = formDefinition.Id }, formDefinition);
+            var responseDto = MapToResponseDto(formDefinition);
+            return CreatedAtAction(nameof(GetFormById), new { id = responseDto.Id }, responseDto);
         }
 
         [HttpGet("{id}")]
@@ -96,7 +82,31 @@ namespace WebAPI.Controllers
              var form = await _unitOfWork.FormDefinitions.GetByIdWithFieldsAsync(id);
             if (form == null) return NotFound();
 
-            return Ok("GetFormById 尚未實作"); // 暫時的回應
+            var responseDto = MapToResponseDto(form);
+            return Ok(responseDto);
+        }
+
+        // 新增一個私有的輔助方法來做映射
+        private FormDefinitionResponseDto MapToResponseDto(FormDefinition form)
+        {
+            return new FormDefinitionResponseDto
+            {
+                Id = form.Id,
+                Name = form.Name,
+                DisplayName = form.DisplayName,
+                Description = form.Description,
+                UserDataTableName = form.UserDataTableName,
+                Fields = form.Fields.Select(f => new FieldDefinitionResponseDto
+                {
+                    Id = f.Id,
+                    Name = f.Name,
+                    Label = f.Label,
+                    FieldType = f.FieldType,
+                    IsRequired = f.IsRequired,
+                    SortOrder = f.SortOrder,
+                    ConfigurationJson = f.ConfigurationJson
+                }).ToList()
+            };
         }
     }
 }

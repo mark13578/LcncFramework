@@ -4,6 +4,7 @@ using Infrastructure.Persistence;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
+using System.Text.Json; 
 
 namespace Infrastructure.Services
 {
@@ -48,9 +49,25 @@ namespace Infrastructure.Services
             {
                 if (data.TryGetValue(field.Name, out var value))
                 {
+                    // 新增邏輯，以處理 JsonElement
+                    object finalValue = value;
+                    if (value is JsonElement element)
+                    {
+                        finalValue = element.ValueKind switch
+                        {
+                            JsonValueKind.String => element.GetString()!,
+                            JsonValueKind.Number => element.GetDecimal(),
+                            JsonValueKind.True => true,
+                            JsonValueKind.False => false,
+                            JsonValueKind.Null => DBNull.Value,
+                            _ => element.ToString() // 作為最後的備用方案
+                        };
+                    }
+
                     columns.Add(field.Name);
                     valuePlaceholders.Add($"@p{paramIndex}");
-                    parameters.Add(new SqlParameter($"@p{paramIndex}", value ?? DBNull.Value));
+                    // 使用轉換後的值
+                    parameters.Add(new SqlParameter($"@p{paramIndex}", finalValue ?? DBNull.Value));
                     paramIndex++;
                 }
             }

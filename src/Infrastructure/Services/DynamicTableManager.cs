@@ -27,7 +27,10 @@ namespace Infrastructure.Services
                 throw new ArgumentException("無效的資料表名稱。");
             }
 
-            var sb = new StringBuilder($"CREATE TABLE {tableName} (");
+            // ↓↓ 加入判斷表格是否存在的邏輯 (以 T-SQL 為例) ↓↓
+            var checkTableExistsSql = $"IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='{tableName}' AND xtype='U')";
+
+            var sb = new StringBuilder($"{checkTableExistsSql} BEGIN CREATE TABLE {tableName} (");
             sb.Append("Id UNIQUEIDENTIFIER PRIMARY KEY, ");
             sb.Append("SubmittedAt DATETIMEOFFSET NOT NULL, ");
 
@@ -43,7 +46,7 @@ namespace Infrastructure.Services
             }
 
             sb.Length -= 2; // 移除最後的 ", "
-            sb.Append(");");
+            sb.Append("); END;"); // <-- 加上 END
 
             await _context.Database.ExecuteSqlRawAsync(sb.ToString());
         }
