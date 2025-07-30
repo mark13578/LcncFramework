@@ -27,6 +27,19 @@ var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["Key"];
 
 // **2. 加入服務到 DI 容器 (Add services to the container)**
+// Allow CORS Services
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:5173") // 允許您的前端來源
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                      });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 // builder.Services.AddSwaggerGen(); // 我們之後再處理 Swagger
@@ -69,6 +82,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// ↓↓ 加入這行以啟用 CORS 中介軟體 ↓↓
+app.UseCors(MyAllowSpecificOrigins);
 
 // **5. 加入認證與授權中介軟體**
 // UseAuthentication 必須在 UseAuthorization 之前
