@@ -13,5 +13,6 @@ namespace Core.Interfaces
     {
         Task<FormDefinition?> GetByIdWithFieldsAsync(Guid id);
         Task AddAsync(FormDefinition formDefinition);
+        Task<FormDefinition?> GetByNameAsync(string name);
     }
 }

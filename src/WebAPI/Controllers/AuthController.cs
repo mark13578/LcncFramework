@@ -16,7 +16,7 @@ namespace WebAPI.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        // private readonly ApplicationDbContext _context;
         private readonly IUnitOfWork _unitOfWork; // 修改
         private readonly IConfiguration _configuration;
 

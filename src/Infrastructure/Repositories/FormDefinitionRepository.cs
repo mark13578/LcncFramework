@@ -26,5 +26,12 @@ namespace Infrastructure.Repositories
                 .Include(f => f.Fields)
                 .FirstOrDefaultAsync(f => f.Id == id);
         }
+
+        public async Task<FormDefinition?> GetByNameAsync(string name)
+        {
+            return await _context.FormDefinitions
+                .Include(f => f.Fields)
+                .FirstOrDefaultAsync(f => f.Name == name);
+        }
     }
 }

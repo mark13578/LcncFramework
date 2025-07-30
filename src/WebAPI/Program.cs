@@ -20,7 +20,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // 註冊 Unit of Work
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDynamicTableManager, DynamicTableManager>();
-
+builder.Services.AddScoped<IDynamicDataService, DynamicDataService>();
 
 // **1. 從 appsettings.json 讀取 JWT 設定**
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
