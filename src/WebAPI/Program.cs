@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Infrastructure.Persistence; // 引用
-using Microsoft.EntityFrameworkCore; // 引用
+using Microsoft.EntityFrameworkCore;
+using Core.Entities;
+using Core.Interfaces; // 引用
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString,
         b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+
+// 註冊 Unit of Work
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // **1. 從 appsettings.json 讀取 JWT 設定**
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -67,5 +72,31 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// **加入測試資料 Seeding**
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ApplicationDbContext>();
+    // 如果 Users 資料表是空的
+    if (!context.Users.Any())
+    {
+        var defaultOrg = new Organization { Name = "Default Corp" };
+        context.Organizations.Add(defaultOrg);
+
+        var adminUser = new User
+        {
+            Username = "admin",
+            // 重要：儲存雜湊後的密碼
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
+            Email = "admin@lcnc.dev",
+            IsActive = true,
+            Organization = defaultOrg
+        };
+        context.Users.Add(adminUser);
+        context.SaveChanges();
+    }
+}
+
 
 app.Run();
