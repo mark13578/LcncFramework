@@ -9,3 +9,4 @@ D:\Desktop\LcncFramework\src\Common\obj\Debug\net8.0\Common.dll
 D:\Desktop\LcncFramework\src\Common\obj\Debug\net8.0\refint\Common.dll
 D:\Desktop\LcncFramework\src\Common\obj\Debug\net8.0\Common.pdb
 D:\Desktop\LcncFramework\src\Common\obj\Debug\net8.0\ref\Common.dll
+D:\Desktop\LcncFramework\src\Common\obj\Debug\net8.0\Common.sourcelink.json
