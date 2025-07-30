@@ -13,6 +13,9 @@ namespace Core.Interfaces
     {
         // 將來有新的實體，就在這裡加入新的 Repository
         IUserRepository Users { get; }
+        IFormDefinitionRepository FormDefinitions { get; }
         Task<int> CompleteAsync();
+
+
     }
 }

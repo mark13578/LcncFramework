@@ -21,6 +21,9 @@ namespace Infrastructure.Persistence
         public DbSet<Role> Roles { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<FormDefinition> FormDefinitions { get; set; }
+        public DbSet<FieldDefinition> FieldDefinitions { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

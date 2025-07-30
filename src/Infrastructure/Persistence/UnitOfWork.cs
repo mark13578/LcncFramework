@@ -14,11 +14,13 @@ namespace Infrastructure.Persistence
     {
         private readonly ApplicationDbContext _context;
         public IUserRepository Users { get; private set; }
+        public IFormDefinitionRepository FormDefinitions { get; private set; } // <-- a. 加入這個屬性
 
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
             Users = new UserRepository(_context);
+            FormDefinitions = new FormDefinitionRepository(_context); // <-- b. 在這裡初始化
         }
 
         public async Task<int> CompleteAsync()

@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Infrastructure.Persistence; // 引用
+using Infrastructure.Services; // 引用
 using Microsoft.EntityFrameworkCore;
 using Core.Entities;
-using Core.Interfaces; // 引用
+using Core.Interfaces;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // 註冊 Unit of Work
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IDynamicTableManager, DynamicTableManager>();
+
 
 // **1. 從 appsettings.json 讀取 JWT 設定**
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
