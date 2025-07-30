@@ -2,8 +2,16 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Infrastructure.Persistence; // 引用
+using Microsoft.EntityFrameworkCore; // 引用
 
 var builder = WebApplication.CreateBuilder(args);
+
+// **加入 DbContext 設定**
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString,
+        b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
 // **1. 從 appsettings.json 讀取 JWT 設定**
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
