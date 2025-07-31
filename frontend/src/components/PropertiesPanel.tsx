@@ -1,11 +1,6 @@
 // src/components/PropertiesPanel.tsx
 import { Box, Typography, TextField } from '@mui/material';
-
-interface CanvasField {
-  id: string;
-  type: any; // 暫時用 any
-  label: string;
-}
+import type { CanvasField } from '../types/builder'; // <-- 修正點：從新的中立檔案導入型別
 
 interface PropertiesPanelProps {
   selectedField: CanvasField | null;
@@ -16,7 +11,9 @@ const PropertiesPanel = ({ selectedField, onUpdateField }: PropertiesPanelProps)
   if (!selectedField) {
     return (
       <Box sx={{ p: 2 }}>
-        <Typography variant="h6">屬性</Typography>
+        <Typography variant="h6" gutterBottom>
+          屬性
+        </Typography>
         <Typography color="textSecondary" sx={{ mt: 2 }}>
           請選擇一個元件進行編輯
         </Typography>
@@ -33,8 +30,13 @@ const PropertiesPanel = ({ selectedField, onUpdateField }: PropertiesPanelProps)
 
   return (
     <Box sx={{ p: 2 }}>
-      <Typography variant="h6" gutterBottom>屬性</Typography>
-      <Typography variant="body2" color="textSecondary">ID: {selectedField.id}</Typography>
+      <Typography variant="h6" gutterBottom>
+        屬性
+      </Typography>
+      <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+        ID: {selectedField.id}
+      </Typography>
+      
       <TextField
         label="欄位標籤 (Label)"
         value={selectedField.label}
@@ -43,7 +45,6 @@ const PropertiesPanel = ({ selectedField, onUpdateField }: PropertiesPanelProps)
         margin="normal"
         variant="outlined"
       />
-      {/* 未來可以根據 selectedField.type 顯示更多不同的屬性設定 */}
     </Box>
   );
 };

@@ -6,9 +6,10 @@ import { Box } from '@mui/material';
 interface SortableItemProps {
   id: string;
   children: React.ReactNode;
+  onClick: (event: React.MouseEvent) => void; 
 }
 
-const SortableItem = ({ id, children }: SortableItemProps) => {
+const SortableItem = ({ id, children, onClick }: SortableItemProps) => {
   const {
     attributes,
     listeners,
@@ -23,10 +24,9 @@ const SortableItem = ({ id, children }: SortableItemProps) => {
   };
 
   return (
-    <Box ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <Box ref={setNodeRef} style={style} {...attributes} {...listeners} onClick={onClick}>
       {children}
     </Box>
   );
 };
-
 export default SortableItem;

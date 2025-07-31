@@ -3,16 +3,12 @@ import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Paper, Typography, Box } from '@mui/material';
 import SortableItem from './SortableItem';
-
-interface CanvasField {
-  id: string;
-  label: string;
-}
+import type { CanvasField } from '../types/builder';
 
 interface DroppableCanvasProps {
   fields: CanvasField[];
-  selectedFieldId: string | null; // 新增：接收選中的 ID
-  onSelectField: (id: string) => void; // 新增：接收點擊處理函式
+  selectedFieldId: string | null;
+  onSelectField: (id: string) => void;
 }
 
 const DroppableCanvas = ({ fields, selectedFieldId, onSelectField }: DroppableCanvasProps) => {
@@ -32,25 +28,24 @@ const DroppableCanvas = ({ fields, selectedFieldId, onSelectField }: DroppableCa
           </Box>
         ) : (
           fields.map(field => (
-            // 將 SortableItem 包在一個 div 中以附加 onClick 事件
-            <div key={field.id} onClick={() => onSelectField(field.id)}>
-              <SortableItem id={field.id}>
-                <Box sx={{ 
-                  p: 2, 
-                  border: field.id === selectedFieldId ? '2px solid #1976d2' : '1px solid #ccc', // 判斷是否選中，顯示不同樣式
-                  mb: 1, 
-                  backgroundColor: 'white', 
-                  cursor: 'grab' 
-                }}>
-                  {field.label}
-                </Box>
-              </SortableItem>
-            </div>
+            <SortableItem key={field.id} id={field.id} onClick={(event) => {
+              event.stopPropagation(); // 關鍵！阻止事件冒泡
+              onSelectField(field.id);
+            }}>
+              <Box sx={{ 
+                p: 2, 
+                border: field.id === selectedFieldId ? '2px solid #1976d2' : '1px solid #ccc',
+                mb: 1, 
+                backgroundColor: 'white', 
+                cursor: 'grab' 
+              }}>
+                {field.label}
+              </Box>
+            </SortableItem>
           ))
         )}
       </SortableContext>
     </Paper>
   );
 };
-
 export default DroppableCanvas;
