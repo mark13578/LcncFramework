@@ -4,7 +4,6 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { Paper, Typography, Box } from '@mui/material';
 import SortableItem from './SortableItem';
 
-// 沿用 Page 中的型別定義
 interface CanvasField {
   id: string;
   label: string;
@@ -12,16 +11,18 @@ interface CanvasField {
 
 interface DroppableCanvasProps {
   fields: CanvasField[];
+  selectedFieldId: string | null; // 新增：接收選中的 ID
+  onSelectField: (id: string) => void; // 新增：接收點擊處理函式
 }
 
-const DroppableCanvas = ({ fields }: DroppableCanvasProps) => {
+const DroppableCanvas = ({ fields, selectedFieldId, onSelectField }: DroppableCanvasProps) => {
   const { setNodeRef } = useDroppable({
-    id: 'canvas-droppable', // 這個 ID 必須與 handleDragEnd 中檢查的 ID 一致
+    id: 'canvas-droppable',
   });
 
   return (
     <Paper 
-      ref={setNodeRef} // 將這個 DOM 節點註冊為可放置區域
+      ref={setNodeRef}
       sx={{ minHeight: '100%', p: 2, border: '2px dashed #ccc' }}
     >
       <SortableContext items={fields.map(f => f.id)} strategy={verticalListSortingStrategy}>
@@ -31,11 +32,20 @@ const DroppableCanvas = ({ fields }: DroppableCanvasProps) => {
           </Box>
         ) : (
           fields.map(field => (
-            <SortableItem key={field.id} id={field.id}>
-              <Box sx={{ p: 2, border: '1px solid #ccc', mb: 1, backgroundColor: 'white', cursor: 'grab' }}>
-                {field.label}
-              </Box>
-            </SortableItem>
+            // 將 SortableItem 包在一個 div 中以附加 onClick 事件
+            <div key={field.id} onClick={() => onSelectField(field.id)}>
+              <SortableItem id={field.id}>
+                <Box sx={{ 
+                  p: 2, 
+                  border: field.id === selectedFieldId ? '2px solid #1976d2' : '1px solid #ccc', // 判斷是否選中，顯示不同樣式
+                  mb: 1, 
+                  backgroundColor: 'white', 
+                  cursor: 'grab' 
+                }}>
+                  {field.label}
+                </Box>
+              </SortableItem>
+            </div>
           ))
         )}
       </SortableContext>
