@@ -86,6 +86,19 @@ namespace WebAPI.Controllers
             return Ok(responseDto);
         }
 
+        [HttpGet("by-name/{name}")]
+        public async Task<IActionResult> GetFormByName(string name)
+        {
+            var form = await _unitOfWork.FormDefinitions.GetByNameAsync(name);
+            if (form == null)
+            {
+                return NotFound(new { message = $"找不到名稱為 '{name}' 的表單定義。" });
+            }
+
+            var responseDto = MapToResponseDto(form);
+            return Ok(responseDto);
+        }
+
         // 新增一個私有的輔助方法來做映射
         private FormDefinitionResponseDto MapToResponseDto(FormDefinition form)
         {

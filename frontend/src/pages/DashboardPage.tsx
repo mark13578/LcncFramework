@@ -1,9 +1,10 @@
 // src/pages/DashboardPage.tsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Typography, Button, CircularProgress } from '@mui/material';
+import { Box, Typography, Button, CircularProgress } from '@mui/material'; // 從 MUI 引用 Link
 import userService from '../services/userService';
 import authService from '../services/authService';
+import { Link as RouterLink } from 'react-router-dom'; // 引用 Link
 
 interface UserProfile {
   username: string;
@@ -29,7 +30,8 @@ const DashboardPage = () => {
     };
 
     fetchUserProfile();
-  }, []);
+  },
+);
 
   const handleLogout = () => {
     authService.logout();
@@ -46,6 +48,11 @@ const DashboardPage = () => {
         主控台
       </Typography>
       {user && <Typography variant="h6">歡迎您，{user.username}！</Typography>}
+
+      {/* ↓↓ 加入前往編輯器的連結按鈕 ↓↓ */}
+      <Button component={RouterLink} to="/builder" variant="outlined" sx={{ mt: 2, mr: 2 }}>
+        前往表單編輯器
+      </Button>
       <Button variant="contained" onClick={handleLogout} sx={{ mt: 2 }}>
         登出
       </Button>

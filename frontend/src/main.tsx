@@ -7,13 +7,17 @@ import CssBaseline from '@mui/material/CssBaseline';
 import router from './routes/AppRouter';
 import theme from './theme/theme';
 import './index.css';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      {/* CssBaseline 是一個 MUI 元件，用來標準化 CSS 樣式 */}
-      <CssBaseline />
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    {/* 使用 LocalizationProvider 提供日期適配器 */}
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </LocalizationProvider>
   </React.StrictMode>
 );
