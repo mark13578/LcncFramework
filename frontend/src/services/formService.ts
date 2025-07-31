@@ -1,5 +1,7 @@
 // src/services/formService.ts
 import api from './api';
+import type { CreateFormRequestDto } from '../types/api'; // 我們將在下一步建立這個型別
+
 
 // =================================================================
 // 修正點一：在 enum 和 interface 前面，全部加上 export 關鍵字
@@ -50,6 +52,13 @@ class FormService {
   async submitFormData(formName: string, data: Record<string, string | number | boolean | Date | null>): Promise<void> {
     await api.post(`/form-data/${formName}`, data);
   }
+
+
+  async createFormDefinition(formData: CreateFormRequestDto): Promise<FormDefinitionResponseDto> {
+    const response = await api.post<FormDefinitionResponseDto>('/formdefinitions', formData);
+    return response.data;
+  }
 }
+
 
 export default new FormService();
